@@ -1,0 +1,9 @@
+{
+  "generator-node": {
+    "promptValues": {
+      "authorName": "lenconda",
+      "authorEmail": "i@lenconda.top",
+      "authorUrl": "https://blog.lenconda.top"
+    }
+  }
+}
