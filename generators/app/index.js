@@ -34,6 +34,18 @@ const styleDependencies = {
   styl: DEPENDENCIES_STYLUS
 };
 
+const typescriptDependencies = {
+  devDependencies: {
+    typescript: '3.2.4',
+    '@types/react': '16.7.22',
+    '@types/react-dom': '16.0.11',
+    '@types/react-router': '^5.0.3',
+    '@types/react-router-dom': '^4.3.4',
+    '@typescript-eslint/eslint-plugin': '^1.13.0',
+    '@typescript-eslint/parser': '^1.13.0'
+  }
+}
+
 module.exports = class extends Generator {
   prompting() {
     // Have Yeoman greet the user.
@@ -116,10 +128,7 @@ module.exports = class extends Generator {
 
   writing() {
     this.fs.copyTpl(
-      this.templatePath(
-        (this.props.typescript ? 'typescript' : 'javascript') +
-          '/package.json.tpl'
-      ),
+      this.templatePath('common/package.json.tpl'),
       this.destinationPath('package.json'),
       {
         name: this.props.name,
@@ -174,26 +183,31 @@ module.exports = class extends Generator {
         name: this.props.name
       }
     );
+    this.fs.copy(this.templatePath('common/src/config/env.config.js'), this.destinationPath('config/env.config.js'));
     this.fs.copy(
       this.templatePath(
         (this.props.typescript ? 'typescript' : 'javascript') + '/config'
       ),
       this.destinationPath('config')
     );
+    this.fs.copy(this.templatePath('common/.eslintignore'), this.destinationPath('.eslintignore'));
 
-    if (this.props.typescript)
+    if (this.props.typescript) {
       this.fs.copy(
         this.templatePath('typescript/tsconfig.json'),
         this.destinationPath('tsconfig.json')
       );
 
+      this.fs.extendJSON('package.json', typescriptDependencies);
+    }
+
     if (this.props.preprocessor !== 'original') {
       this.fs.copyTpl(
         this.templatePath(
-          'common/src/App.' + (this.props.typescript ? 'tsx' : 'jsx') + '.tpl'
+          'common/src/App.' + (this.props.typescript ? 'tsx' : 'js') + '.tpl'
         ),
         this.destinationPath(
-          'src/App.' + (this.props.typescript ? 'tsx' : 'jsx')
+          'src/App.' + (this.props.typescript ? 'tsx' : 'js')
         ),
         {
           extension: this.props.preprocessor
@@ -201,9 +215,9 @@ module.exports = class extends Generator {
       );
       this.fs.copyTpl(
         this.templatePath(
-          'common/src/pages/Hello/index.' + (this.props.typescript ? 'tsx' : 'jsx') + '.tpl'
+          'common/src/pages/Hello/index.' + (this.props.typescript ? 'tsx' : 'js') + '.tpl'
         ),
-        this.destinationPath('src/pages/Hello/index.' + (this.props.typescript ? 'tsx' : 'jsx')),
+        this.destinationPath('src/pages/Hello/index.' + (this.props.typescript ? 'tsx' : 'js')),
         {
           extension: this.props.preprocessor
         }
@@ -225,10 +239,10 @@ module.exports = class extends Generator {
     } else {
       this.fs.copyTpl(
         this.templatePath(
-          'common/src/App.' + (this.props.typescript ? 'tsx' : 'jsx') + '.tpl'
+          'common/src/App.' + (this.props.typescript ? 'tsx' : 'js') + '.tpl'
         ),
         this.destinationPath(
-          'src/App.' + (this.props.typescript ? 'tsx' : 'jsx')
+          'src/App.' + (this.props.typescript ? 'tsx' : 'js')
         ),
         {
           extension: 'css'
@@ -236,9 +250,9 @@ module.exports = class extends Generator {
       );
       this.fs.copyTpl(
         this.templatePath(
-          'common/src/pages/Hello/index.' + (this.props.typescript ? 'tsx' : 'jsx') + '.tpl'
+          'common/src/pages/Hello/index.' + (this.props.typescript ? 'tsx' : 'js') + '.tpl'
         ),
-        this.destinationPath('src/pages/Hello/index.' + (this.props.typescript ? 'tsx' : 'jsx')),
+        this.destinationPath('src/pages/Hello/index.' + (this.props.typescript ? 'tsx' : 'js')),
         {
           extension: 'css'
         }
