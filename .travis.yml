@@ -1,8 +1,21 @@
 language: node_js
+notifications:
+  email:
+    recipients:
+      - i@lenconda.top
+    on_success: always
+    on_failure: always
 node_js:
-  - v12
-  - v10
-  - v8
-  - v6
-  - v4
-after_script: cat ./coverage/lcov.info | coveralls
+  - '10.0'
+  - '9.11'
+deploy:
+  provider: npm
+  email: 'i@lenconda.top'
+  api_key: $NPM_TOKEN
+  skip_cleanup: true
+  on:
+    tags: true
+before_install:
+  - unset CI
+script:
+  - npm test
