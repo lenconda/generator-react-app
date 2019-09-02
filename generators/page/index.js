@@ -1,7 +1,6 @@
 'use strict';
 const Generator = require('yeoman-generator');
 const mkdirp = require('mkdirp');
-const path = require('path');
 
 const PREPROCESS_SASS = 'scss';
 const PREPROCESS_LESS = 'less';
