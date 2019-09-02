@@ -1,5 +1,8 @@
-# generator-react-app [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url] [![Coverage percentage][coveralls-image]][coveralls-url]
-> A generator for generating React applications with Webpack
+# @lenconda/generator-react-app 
+
+[![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url] [![Coverage percentage][coveralls-image]][coveralls-url]
+
+> A generator for React SPA with Webpack
 
 ## Installation
 
@@ -7,21 +10,20 @@ First, install [Yeoman](http://yeoman.io) and generator-react-app using [npm](ht
 
 ```bash
 npm install -g yo
-npm install -g generator-react-app
+npm install -g @lenconda/generator-react-app
 ```
 
-Then generate your new project:
+### Generate Project
 
 ```bash
-yo react-app
+yo @lenconda/react-app
 ```
 
-## Getting To Know Yeoman
+### Generate Page
 
- * Yeoman has a heart of gold.
- * Yeoman is a person with feelings and opinions, but is very easy to work with.
- * Yeoman can be too opinionated at times but is easily convinced not to be.
- * Feel free to [learn more about Yeoman](http://yeoman.io/).
+```bash
+yo @lenconda/react-app:page
+```
 
 ## License
 
