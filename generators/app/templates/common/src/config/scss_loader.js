@@ -3,6 +3,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 exports = module.exports = {
   test: /\.(sa|sc|c)ss$/,
   use: [
+    'css-hot-loader',
     {
       loader: MiniCssExtractPlugin.loader,
       options: {

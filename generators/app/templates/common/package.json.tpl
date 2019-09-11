@@ -37,6 +37,7 @@
     "eslint-plugin-react": "^7.14.3",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "3.2.0",
+    "css-hot-loader": "^1.4.4",
     "mini-css-extract-plugin": "^0.8.0",
     "postcss-loader": "^3.0.0",
     "style-loader": "0.23.1",
