@@ -1,6 +1,6 @@
 {
   "name": "@lenconda/generator-react-app",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A generator for generating React applications with Webpack",
   "homepage": "https://github.com/lenconda/generator-react-app",
   "author": {
