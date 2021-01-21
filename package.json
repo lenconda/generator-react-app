@@ -1,6 +1,6 @@
 {
   "name": "@lenconda/generator-react-app",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "A generator for generating React applications with Webpack",
   "homepage": "https://github.com/lenconda/generator-react-app",
   "author": {
@@ -17,7 +17,7 @@
     "README.md",
     "LICENSE"
   ],
-  "main": "dist/generators/index.js",
+  "main": "generators/index.js",
   "keywords": [
     "Webpack",
     "React.js",
@@ -25,6 +25,8 @@
     "yeoman-generator"
   ],
   "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/cheerio": "^0.22.23",
     "@types/fs-extra": "^9.0.6",
     "@types/yeoman-generator": "^4.11.3",
     "@types/yosay": "0.0.29",
@@ -49,7 +51,9 @@
     "npm": ">= 4.0.0"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "chalk": "^2.1.0",
+    "cheerio": "^1.0.0-rc.5",
     "download-git-repo": "^3.0.2",
     "fs-extra": "^9.1.0",
     "yeoman-generator": "^2.0.1",

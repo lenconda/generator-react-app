@@ -1,3 +1,18 @@
+/**
+ * @file src/app/index.ts
+ * @author lenconda <i@lenconda.top>
+ * @description this is the entry file for @lenconda/generator-react-app scaffold
+ *
+ * For many reasons, the generator will be able to access all of the react boilerplate
+ * at https://github.com/lenconda?q=yo-boilerplate-react&tab=repositories, otherwise we can
+ * make the most little modification to this generator itself.
+ *
+ * So we made decisions to ask users to enter their favorite boilerplate's name, and then
+ * download it form GitHub.
+ *
+ * For details, please read https://github.com/lenconda/generator-react-app#readme
+ */
+
 import Generator, { Questions } from 'yeoman-generator';
 import chalk from 'chalk';
 import yosay from 'yosay';
@@ -5,42 +20,62 @@ import fs from 'fs-extra';
 import path from 'path';
 import download from './utils/download';
 import traverse from './utils/traverse';
+import getQuestions from './utils/questions';
 
 interface AppGeneratorAnswer {
   name: string;
   template: string;
+  [key: string]: string;
 }
 
 export default class extends Generator {
   // eslint-disable-next-line prettier/prettier
   private props: AppGeneratorAnswer;
 
-  prompting() {
+  async prompting() {
     this.log(
       yosay(
         `Welcome to the ${chalk.cyan(
-          '@lenconda/generator-react-app'
+          '\n@lenconda/react-app\n'
         )} generator!`
       )
     );
 
-    const questions: Questions = [
-      {
-        type: 'input',
-        name: 'name',
-        message: 'Enter the project name',
-        default: 'project',
-      },
-      {
-        type: 'input',
-        name: 'template',
-        message:
-          'Enter the template name from https://github.com/lenconda?q=yo-boilerplate-react&tab=repositories',
-        default: 'typescript',
-      },
-    ];
+    try {
+      // default and essential questions
+      const defaultQuestions: Questions = [
+        {
+          type: 'input',
+          name: 'name',
+          message: 'Enter the project name',
+          default: 'project',
+        },
+        {
+          type: 'input',
+          name: 'template',
+          message:
+            'Enter the template name from https://github.com/lenconda?q=yo-boilerplate-react&tab=repositories',
+          default: 'typescript',
+        },
+      ];
 
-    return this.prompt(questions).then((props: AppGeneratorAnswer) => this.props = props);
+      const props = await this.prompt(defaultQuestions) as AppGeneratorAnswer;
+
+      this.log(chalk.cyan('Reading template...'));
+      const boilerplateQuestions =
+        await getQuestions(
+          `https://github.com/lenconda/yo-boilerplate-react-${props.template}/blob/master/.questions.json`
+        );
+
+      const boilerplateProps = boilerplateQuestions ? await this.prompt(boilerplateQuestions) : {};
+
+      const generatorProps = Object.assign({}, props, boilerplateProps);
+      console.log(generatorProps);
+      this.props = generatorProps;
+    } catch (e) {
+      this.log(chalk.red(e.message || e.toString()));
+      process.exit(1);
+    }
   }
 
   default() {
@@ -69,10 +104,10 @@ export default class extends Generator {
       this.log(chalk.cyan(`Template downloaded at ${this.destinationPath()} in ${duration}ms`));
 
       this.log(chalk.cyan('Initializing template...'));
-      traverse(this.destinationPath(), (pathname: string) => {
+      traverse(this.destinationPath(), /\.template$/, (pathname: string) => {
         this.fs.copyTpl(pathname, pathname.split('.template')[0], this.props);
         fs.removeSync(pathname);
-      }, /\.template$/);
+      });
     } catch (e) {
       console.log(e);
       this.log(chalk.red(e.message || e.toString()));
