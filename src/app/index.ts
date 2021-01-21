@@ -68,7 +68,7 @@ export default class extends Generator {
       this.log(chalk.cyan('Reading template...'));
       const boilerplateQuestionsString =
         await getGitHubCodeContent(
-          `https://github.com/lenconda/yo-boilerplate-react-${props.template}/blob/8511ea536fc63bc3d3d78e764d03742fda7249e0/.questions.json`
+          `https://github.com/lenconda/yo-boilerplate-react-${props.template}/blob/master/.questions.json`
         );
 
       const boilerplateProps = boilerplateQuestionsString
