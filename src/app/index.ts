@@ -18,9 +18,10 @@ import chalk from 'chalk';
 import yosay from 'yosay';
 import fs from 'fs-extra';
 import path from 'path';
+import _ from 'lodash';
 import download from './utils/download';
 import traverse from './utils/traverse';
-import getQuestions from './utils/questions';
+import { getGitHubCodeContent } from './utils/github';
 
 interface AppGeneratorAnswer {
   name: string;
@@ -43,6 +44,7 @@ export default class extends Generator {
 
     try {
       // default and essential questions
+      // it is hard-coded in the generator, DO NOT MODIFY IT
       const defaultQuestions: Questions = [
         {
           type: 'input',
@@ -59,18 +61,21 @@ export default class extends Generator {
         },
       ];
 
+      // get props from user's input
       const props = await this.prompt(defaultQuestions) as AppGeneratorAnswer;
 
+      // read remote boilerplate's .question.json
       this.log(chalk.cyan('Reading template...'));
-      const boilerplateQuestions =
-        await getQuestions(
-          `https://github.com/lenconda/yo-boilerplate-react-${props.template}/blob/master/.questions.json`
+      const boilerplateQuestionsString =
+        await getGitHubCodeContent(
+          `https://github.com/lenconda/yo-boilerplate-react-${props.template}/blob/8511ea536fc63bc3d3d78e764d03742fda7249e0/.questions.json`
         );
 
-      const boilerplateProps = boilerplateQuestions ? await this.prompt(boilerplateQuestions) : {};
+      const boilerplateProps = boilerplateQuestionsString
+        ? await this.prompt(JSON.parse(boilerplateQuestionsString))
+        : {};
 
-      const generatorProps = Object.assign({}, props, boilerplateProps);
-      console.log(generatorProps);
+      const generatorProps = _.merge({}, props, boilerplateProps);
       this.props = generatorProps;
     } catch (e) {
       this.log(chalk.red(e.message || e.toString()));

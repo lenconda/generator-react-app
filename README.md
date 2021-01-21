@@ -2,7 +2,7 @@
 
 [![NPM version][npm-image]][npm-url]
 
-> A generator for React SPA with Webpack
+> A generator for React APP with Webpack
 
 ## Installation
 
@@ -13,11 +13,15 @@ npm install -g yo
 npm install -g @lenconda/generator-react-app
 ```
 
-### Generate Project
+## Create Project
 
 ```bash
 yo @lenconda/react-app
 ```
+
+### Find a Template
+
+Go to <https://github.com/lenconda?tab=repositories&q=yo-boilerplate-react->, find an appropriate template, and get the name without `yo-boilerplate-react-` prefix, and input into the CLI interface.
 
 ## License
 
