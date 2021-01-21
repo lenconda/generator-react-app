@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "typeRoots": [
+      "node_modules/@types/**/*",
+      "typings/**/*.d.ts"
+    ],
+    "allowJs": false,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "target": "es2017",
+    "incremental": true,
+    "tsBuildInfoFile": "./generators/.tsbuildinfo",
+    "outDir": "./generators",
+    "rootDir": "./src",
+    "lib": [
+      "es5",
+      "dom",
+      "esnext",
+      "es2017",
+      "es2015",
+      "es2016"
+    ]
+  },
+  "exclude": [
+    "node_modules/**/*",
+    "dist/**/*",
+    "scripts/**/*",
+    "__tests__/**/*",
+    "src/**/*.js",
+    "generators/**/*"
+  ]
+}

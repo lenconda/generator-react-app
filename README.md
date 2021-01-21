@@ -1,6 +1,6 @@
-# @lenconda/generator-react-app 
+# @lenconda/generator-react-app
 
-[![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url] [![Coverage percentage][coveralls-image]][coveralls-url]
+[![NPM version][npm-image]][npm-url]
 
 > A generator for React SPA with Webpack
 
@@ -19,16 +19,9 @@ npm install -g @lenconda/generator-react-app
 yo @lenconda/react-app
 ```
 
-### Generate Page
-
-```bash
-yo @lenconda/react-app:page
-```
-
 ## License
 
-MIT © [lenconda](https://blog.lenconda.top)
-
+MIT © [Lenconda](https://lenconda.top)
 
 [npm-image]: https://badge.fury.io/js/generator-react-app.svg
 [npm-url]: https://npmjs.org/package/generator-react-app

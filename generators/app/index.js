@@ -1,279 +1,68 @@
-'use strict';
-const Generator = require('yeoman-generator');
-const chalk = require('chalk');
-const yosay = require('yosay');
-const mkdirp = require('mkdirp');
-const path = require('path');
-
-const PREPROCESS_SASS = 'scss';
-const PREPROCESS_LESS = 'less';
-const PREPROCESS_STYLUS = 'styl';
-const PREPROCESS_ORIGINAL = 'original';
-
-const DEPENDENCIES_SASS = {
-  devDependencies: {
-    'sass-loader': '^7.1.0',
-    'node-sass': '^4.12.0'
-  }
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-const DEPENDENCIES_LESS = {
-  devDependencies: {
-    less: '^3.10.3',
-    'less-loader': '^5.0.0'
-  }
-};
-const DEPENDENCIES_STYLUS = {
-  devDependencies: {
-    stylus: '^0.54.7',
-    'stylus-loader': '^3.0.2'
-  }
-};
-const styleDependencies = {
-  scss: DEPENDENCIES_SASS,
-  less: DEPENDENCIES_LESS,
-  styl: DEPENDENCIES_STYLUS
-};
-
-const typescriptDependencies = {
-  devDependencies: {
-    typescript: '3.2.4',
-    '@types/react': '16.7.22',
-    '@types/react-dom': '16.0.11',
-    '@types/react-router': '^5.0.3',
-    '@types/react-router-dom': '^4.3.4',
-    '@typescript-eslint/eslint-plugin': '^1.13.0',
-    '@typescript-eslint/parser': '^1.13.0'
-  }
+Object.defineProperty(exports, "__esModule", { value: true });
+const yeoman_generator_1 = __importDefault(require("yeoman-generator"));
+const chalk_1 = __importDefault(require("chalk"));
+const yosay_1 = __importDefault(require("yosay"));
+const fs_extra_1 = __importDefault(require("fs-extra"));
+const path_1 = __importDefault(require("path"));
+const download_1 = __importDefault(require("./utils/download"));
+const traverse_1 = __importDefault(require("./utils/traverse"));
+class default_1 extends yeoman_generator_1.default {
+    prompting() {
+        this.log(yosay_1.default(`Welcome to the ${chalk_1.default.cyan('@lenconda/generator-react-app')} generator!`));
+        const questions = [
+            {
+                type: 'input',
+                name: 'name',
+                message: 'Enter the project name',
+                default: 'project',
+            },
+            {
+                type: 'input',
+                name: 'template',
+                message: 'Enter the template name from https://github.com/lenconda?q=yo-boilerplate-react&tab=repositories',
+                default: 'typescript',
+            },
+        ];
+        return this.prompt(questions).then((props) => this.props = props);
+    }
+    default() {
+        const { name, template } = this.props;
+        const destinationPath = path_1.default.resolve(process.cwd(), name);
+        if (!name || !template) {
+            this.log(chalk_1.default.red('Lost some parameters, please check'));
+            process.exit(1);
+        }
+        if (fs_extra_1.default.existsSync(destinationPath)) {
+            this.log(chalk_1.default.red('Cannot initialize a project into an existed directory'));
+            process.exit(1);
+        }
+        this.destinationRoot(destinationPath);
+    }
+    async writing() {
+        const githubRepositoryName = `github:lenconda/yo-boilerplate-react-${this.props.template}#master`;
+        try {
+            this.log(chalk_1.default.cyan(`Downloading template: ${githubRepositoryName}`));
+            const duration = await download_1.default(githubRepositoryName, this.destinationPath());
+            this.log(chalk_1.default.cyan(`Template downloaded at ${this.destinationPath()} in ${duration}ms`));
+            this.log(chalk_1.default.cyan('Initializing template...'));
+            traverse_1.default(this.destinationPath(), (pathname) => {
+                this.fs.copyTpl(pathname, pathname.split('.template')[0], this.props);
+                fs_extra_1.default.removeSync(pathname);
+            }, /\.template$/);
+        }
+        catch (e) {
+            console.log(e);
+            this.log(chalk_1.default.red(e.message || e.toString()));
+            process.exit(1);
+        }
+    }
+    install() {
+        this.log(chalk_1.default.cyan('Installing NPM dependencies...'));
+        this.npmInstall();
+    }
 }
-
-module.exports = class extends Generator {
-  prompting() {
-    // Have Yeoman greet the user.
-    this.log(
-      yosay(
-        `Welcome to the first-rate ${chalk.red(
-          'generator-react-spa'
-        )} generator!`
-      )
-    );
-
-    const prompts = [
-      {
-        type: 'input',
-        name: 'name',
-        message: 'Input your project name',
-        default: 'example'
-      },
-      {
-        type: 'input',
-        name: 'description',
-        message: 'Input your project description',
-        default: ''
-      },
-      {
-        type: 'input',
-        name: 'repository',
-        message: 'Input your project git repository',
-        default: ''
-      },
-      {
-        type: 'input',
-        name: 'author',
-        message: 'Input author name',
-        default: ''
-      },
-      {
-        type: 'confirm',
-        name: 'typescript',
-        message: 'Would you like to use TypeScript?',
-        default: true
-      },
-      {
-        type: 'list',
-        name: 'preprocessor',
-        message: 'Which CSS preprocessor would you like to choose?',
-        choices: [
-          { value: PREPROCESS_ORIGINAL, name: 'Original CSS' },
-          { value: PREPROCESS_SASS, name: 'Sass / Scss' },
-          { value: PREPROCESS_LESS, name: 'Less' },
-          { value: PREPROCESS_STYLUS, name: 'Stylus' }
-        ],
-        default: PREPROCESS_ORIGINAL
-      },
-      {
-        type: 'input',
-        name: 'license',
-        message: 'Input a license for the project',
-        default: 'MIT'
-      }
-    ];
-
-    return this.prompt(prompts).then(props => {
-      this.props = props;
-    });
-  }
-
-  default() {
-    if (path.basename(this.destinationPath()) !== this.props.name) {
-      this.log(`\nYour generator must be inside a folder named 
-        ${this.props.name}\n
-        The generator ${chalk.yellow(
-    'will automatically create the folder in this directory'
-  )}.\n`);
-
-      mkdirp(this.props.name);
-      this.destinationRoot(this.destinationPath(this.props.name));
-    }
-  }
-
-  writing() {
-    this.fs.copyTpl(
-      this.templatePath('common/package.json.tpl'),
-      this.destinationPath('package.json'),
-      {
-        name: this.props.name,
-        repository: this.props.repository,
-        license: this.props.license,
-        description: this.props.description,
-        author: this.props.author
-      }
-    );
-
-    if (this.props.preprocessor !== 'original')
-      this.fs.extendJSON(
-        this.destinationPath('package.json'),
-        styleDependencies[this.props.preprocessor]
-      );
-
-    this.fs.copy(
-      this.templatePath('common/.gitignore'),
-      this.destinationPath('.gitignore')
-    );
-    this.fs.copy(
-      this.templatePath('common/postcss.config.js'),
-      this.destinationPath('postcss.config.js')
-    );
-    this.fs.copy(
-      this.templatePath('common/assets'),
-      this.destinationPath('assets')
-    );
-    this.fs.copy(
-      this.templatePath(
-        (this.props.typescript ? 'typescript' : 'javascript') + '/.babelrc'
-      ),
-      this.destinationPath('.babelrc')
-    );
-    
-    this.fs.copy(
-      this.templatePath(
-        (this.props.typescript ? 'typescript' : 'javascript') + '/.eslintrc.js'
-      ),
-      this.destinationPath('.eslintrc.js')
-    );
-    this.fs.copy(
-      this.templatePath(
-        (this.props.typescript ? 'typescript' : 'javascript') + '/src'
-      ),
-      this.destinationPath('src')
-    );
-    this.fs.copyTpl(
-      this.templatePath('common/src/templates/index.html.tpl'),
-      this.destinationPath('src/templates/index.html'),
-      {
-        name: this.props.name
-      }
-    );
-    this.fs.copy(this.templatePath('common/src/config/env.config.js'), this.destinationPath('config/env.config.js'));
-    this.fs.copy(
-      this.templatePath(
-        (this.props.typescript ? 'typescript' : 'javascript') + '/config'
-      ),
-      this.destinationPath('config')
-    );
-    this.fs.copy(this.templatePath('common/.eslintignore'), this.destinationPath('.eslintignore'));
-
-    if (this.props.typescript) {
-      this.fs.copy(
-        this.templatePath('typescript/tsconfig.json'),
-        this.destinationPath('tsconfig.json')
-      );
-
-      this.fs.extendJSON('package.json', typescriptDependencies);
-    }
-
-    if (this.props.preprocessor !== 'original') {
-      this.fs.copyTpl(
-        this.templatePath(
-          'common/src/App.' + (this.props.typescript ? 'tsx' : 'js') + '.tpl'
-        ),
-        this.destinationPath(
-          'src/App.' + (this.props.typescript ? 'tsx' : 'js')
-        ),
-        {
-          extension: this.props.preprocessor
-        }
-      );
-      this.fs.copyTpl(
-        this.templatePath(
-          'common/src/pages/Hello/index.' + (this.props.typescript ? 'tsx' : 'js') + '.tpl'
-        ),
-        this.destinationPath('src/pages/Hello/index.' + (this.props.typescript ? 'tsx' : 'js')),
-        {
-          extension: this.props.preprocessor
-        }
-      );
-      this.fs.copy(
-        this.templatePath('common/src/pages/Hello/index.' + this.props.preprocessor),
-        this.destinationPath('src/pages/Hello/index.' + this.props.preprocessor)
-      );
-      this.fs.copy(
-        this.templatePath('common/src/App.' + this.props.preprocessor),
-        this.destinationPath('src/App.' + this.props.preprocessor)
-      );
-      this.fs.copy(
-        this.templatePath(
-          'common/src/config/' + this.props.preprocessor + '_loader.js'
-        ),
-        this.destinationPath('config/css_loaders.js')
-      );
-    } else {
-      this.fs.copyTpl(
-        this.templatePath(
-          'common/src/App.' + (this.props.typescript ? 'tsx' : 'js') + '.tpl'
-        ),
-        this.destinationPath(
-          'src/App.' + (this.props.typescript ? 'tsx' : 'js')
-        ),
-        {
-          extension: 'css'
-        }
-      );
-      this.fs.copyTpl(
-        this.templatePath(
-          'common/src/pages/Hello/index.' + (this.props.typescript ? 'tsx' : 'js') + '.tpl'
-        ),
-        this.destinationPath('src/pages/Hello/index.' + (this.props.typescript ? 'tsx' : 'js')),
-        {
-          extension: 'css'
-        }
-      );
-      this.fs.copy(
-        this.templatePath('common/src/pages/Hello/index.css'),
-        this.destinationPath('src/pages/Hello/index.css')
-      );
-      this.fs.copy(
-        this.templatePath('common/src/App.css'),
-        this.destinationPath('src/App.css')
-      );
-      this.fs.copy(
-        this.templatePath('common/src/config/css_loader.js'),
-        this.destinationPath('config/css_loaders.js')
-      );
-    }
-  }
-
-  install() {
-    this.log('\nInstall dependencies...\n');
-    this.npmInstall();
-  }
-};
+exports.default = default_1;
