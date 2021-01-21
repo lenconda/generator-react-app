@@ -12,7 +12,7 @@
     "access": "public"
   },
   "files": [
-    "dist",
+    "generators",
     "package.json",
     "README.md",
     "LICENSE"
