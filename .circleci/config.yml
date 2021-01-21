@@ -26,7 +26,6 @@ jobs:
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
-            - v1-dependencies-
       - run: ls -al
       - run: npm run build
       - run: ls -al
@@ -37,7 +36,7 @@ jobs:
       - save_cache:
           paths:
             - generators
-          key: generators
+          key: generators-{{ checksum "package.json" }}
   deploy:
     <<: *defaults
     steps:
@@ -45,9 +44,8 @@ jobs:
           at: ~/repo
       - restore_cache:
           keys:
-            - generators
+            - generators-{{ checksum "package.json" }}
             - v1-dependencies-{{ checksum "package.json" }}
-            - v1-dependencies-
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
       - run: ls -al
       - run: npm publish --access public
